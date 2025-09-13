@@ -1,0 +1,82 @@
+MLflow is an open-source MLOps (Machine Learning Operations) platform that helps you manage the end-to-end machine learning lifecycle. It was originally developed by Databricks and is widely used in ML projects.
+
+Here’s a breakdown of what MLflow is and does:
+
+
+---
+
+🔹 Main Components of MLflow
+
+MLflow has 4 primary components:
+
+1. MLflow Tracking
+
+Used to log experiments (code versions, parameters, metrics, and artifacts).
+
+Lets you compare runs and results in a UI.
+
+Example: tracking model accuracy when changing hyperparameters.
+
+
+
+2. MLflow Projects
+
+A packaging format for reproducible runs.
+
+Uses a simple MLproject file (YAML) to define dependencies and entry points.
+
+Makes experiments portable and shareable across environments.
+
+
+
+3. MLflow Models
+
+Standardizes how models are packaged and deployed.
+
+Supports multiple “flavors” (scikit-learn, TensorFlow, PyTorch, R, etc.).
+
+Models can be deployed to REST APIs, cloud, or edge devices.
+
+
+
+4. MLflow Registry
+
+A central model store to manage versions of models.
+
+Supports stages like Staging, Production, Archived.
+
+Enables collaboration between data scientists and ops teams.
+
+
+
+🔹 Why MLflow is useful
+
+Keeps track of experiments systematically.
+
+Helps with model reproducibility.
+
+Allows team collaboration on ML models.
+
+Works with any ML library (framework-agnostic).
+
+Simplifies deployment to production.
+
+
+
+---
+
+🔹 Typical MLflow Workflow
+
+1. Train model → log params, metrics, and artifacts with MLflow Tracking.
+
+
+2. Package training code into MLflow Project for reproducibility.
+
+
+3. Save the trained model in MLflow Models format.
+
+
+4. Register it in the MLflow Model Registry.
+
+
+5. Deploy the model via MLflow to a REST API, cloud service, or container.
