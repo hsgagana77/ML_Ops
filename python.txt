@@ -1,0 +1,61 @@
+#!/bin/bash
+sudo apt install python3 -y
+sudo apt-get install python3-venv -y
+python3 -m venv venv
+. venv/bin/activate
+pip3 install -r requirements.txt
+python3 product_list_app.py
+
+
+
+
+FROM python:3.9-slim-buster
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+EXPOSE 5000
+ENV FLASK_APP=product_list_app.py
+ENV FLASK_RUN_HOST=0.0.0.0
+CMD ["flask", "run", "--port", "5000"]
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flaskmonitor
+  labels:
+    app: flaskmonitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flaskmonitor
+  template:
+    metadata:
+      labels:
+        app: flaskmonitor
+    spec:
+      containers:
+      - name: flaskmonitor
+        image: dvasanth26/flaskapp:latest
+        ports:
+        - containerPort: 5000
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: flaskmonitor
+  name: flaskmonitor
+spec:
+  type: NodePort
+  ports:
+    - port: 5000
+      targetPort: 5000
+      protocol: TCP
+  selector:
+    app: flaskmonitor
