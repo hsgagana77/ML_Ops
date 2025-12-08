@@ -1,0 +1,66 @@
+Baremetal shell script
+
+#!/bin/bash
+set -e
+
+# Ensure Node & npm installed (skip if already present on agent)
+if ! command -v node >/dev/null 2>&1; then
+  sudo apt-get update -y
+  sudo apt-get install -y nodejs npm
+fi
+
+# Go to workspace
+cd /var/lib/jenkins/workspace/lab_node
+
+# Install dependencies
+npm ci
+
+# Stop any process listening on port 3000 (optional, safe)
+if sudo lsof -i :3000 -t >/dev/null 2>&1; then
+  sudo kill -9 $(sudo lsof -i :3000 -t) || true
+fi
+
+# Start app in background with nohup (logs to nohup.out)
+nohup npm start >/var/log/lab_node_app.out 2>&1 &
+
+echo "App started (nohup). Check /var/log/lab_node_app.out for logs."
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-app-deployment
+  labels:
+    app: node-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-app
+  template:
+    metadata:
+      labels:
+        app: node-app 
+    spec:
+      containers:
+      - name: node-app
+        image: gaganahs/nodeapp:latest 
+        ports:
+        - containerPort: 8080
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: node-app
+  name: node-app
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: node-app
+
