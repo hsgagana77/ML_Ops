@@ -39,8 +39,8 @@ The above steps are for baremetal
 5.Java_docker
 Docker--->Triggers --> Select build after other projects are built--> select last baremetal project
    Build steps -->1.Execute shell --> give below two commannds
-     sudo docker build . -f Dockerfile -t mavenapp:v1
-     sudo docker run --name mavenapp -d -p 100:8080 mavenapp:v1
+     docker build -t mavenapp:latest -f Dockerfile .
+     docker run -d -p 8080:8080 --name mavenapp mavenapp:latest
    Build steps -->2.Docker build and publish --->Give Repository name--> gaganahs/your_repo_name --> Tag v1 --> Registry creds
    (select docker creds)
 
@@ -49,7 +49,21 @@ Docker--->Triggers --> Select build after other projects are built--> select las
    Build steps --> Deploy to kubernetes --> Select kubeconfig --> Give .yaml(service and deployment) file names in config
 
 
-#Dockerfile
+#Dockerfile for jar
+
+#This one requires you to run:
+#mvn clean package
+
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+
+COPY target/*.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
+#Dockerfile for war
 
 # ===== Build Stage =====
 FROM maven:3.9.9-eclipse-temurin-17 AS build
